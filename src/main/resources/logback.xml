@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyy-MM-dd HH:mm:ss.SSS} %p %t %logger{36}:%L - %msg%n</pattern>
+			<charset class="java.nio.charset.Charset">UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<root level="info">
+		<!-- 生产环境采用文件日志 -->
+		<appender-ref ref="stdout"/>
+	</root>
+
+</configuration>
