@@ -12,6 +12,6 @@
 
     <task:annotation-driven scheduler="scheduler"/>
 
-    <import resource="spring-redis.xml" />
+    <import resource="spring-redis.xml"/>
 
 </beans>

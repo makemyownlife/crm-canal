@@ -6,7 +6,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <bean id="redisConfig" class="org.redisson.config.Config">
+    <bean id="singleServerConfig" class="com.courage.platform.redis.client.config.PlatformSingleServerConfig">
+        <property name="address" value="redis://127.0.0.1:6379" />
+    </bean>
+
+    <bean id="platformRedisClient" class="com.courage.platform.redis.client.PlatformRedisClient">
+        <constructor-arg ref="singleServerConfig" index="0"/>
     </bean>
 
 </beans>
