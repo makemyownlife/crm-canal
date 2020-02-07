@@ -1,15 +1,18 @@
 package com.courage.platform.crm.canal.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
+import com.courage.platform.redis.client.PlatformRedisClient;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -18,7 +21,9 @@ import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhangyong on 2020/2/6.
@@ -48,9 +53,10 @@ public class CanalService {
         row_format = SEP + "----------------> binlog[{}:{}] , name[{},{}] , eventType : {} , executeTime : {}({}) , gtid : ({}) , delay : {} ms" + SEP;
 
         transaction_format = SEP + "================> binlog[{}:{}] , executeTime : {}({}) , gtid : ({}) , delay : {}ms" + SEP;
-
     }
 
+    @Autowired
+    private PlatformRedisClient platformRedisClient;
 
     @Value("${zk.servers.address}")
     private String zkServers;
@@ -220,6 +226,12 @@ public class CanalService {
                         printColumn(rowData.getAfterColumnsList());
                     } else {
                         printColumn(rowData.getAfterColumnsList());
+                        List<CanalEntry.Column> columnLIst = rowData.getAfterColumnsList();
+                        Map<String, Object> mapping = new HashMap<String, Object>();
+                        for (CanalEntry.Column column : columnLIst) {
+                            mapping.put(column.getName(), column.getValue());
+                        }
+                        platformRedisClient.getPlatformStringCommand().setEx("id:" + mapping.get("id"), JSON.toJSONString(mapping), 100);
                     }
                 }
             }
